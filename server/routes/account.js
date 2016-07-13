@@ -107,7 +107,7 @@ router.post('/signin', (req, res) => {
 });
 
 /*
-    ACCOUNT SIGNUP: GET /api/account/getInfo
+    GET CURRENT USER INFO GET /api/account/getInfo
 */
 router.get('/getinfo', (req, res) => {
     if(typeof req.session.loginInfo === "undefined") {
@@ -120,7 +120,7 @@ router.get('/getinfo', (req, res) => {
 });
 
 /*
-    ACCOUNT SIGNUP: POST /api/account/getInfo
+    LOGOUT: POST /api/account/logout
 */
 router.post('/logout', (req, res) => {
     req.session.destroy(err => { if(err) throw err; });
