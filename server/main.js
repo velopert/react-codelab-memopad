@@ -39,6 +39,12 @@ app.use('/api', api);
 /* serve static files */
 app.use('/', express.static(path.join(__dirname, './../public')));
 
+/* handle error */
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
 /* listen server */
 app.listen(port, () => {
     console.log('Express is listening on port', port);
