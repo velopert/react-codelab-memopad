@@ -3,6 +3,14 @@ import Account from '../models/account';
 
 const router = express.Router();
 
+/*
+    ACCOUNT SIGNUP: POST /api/account/signup
+    BODY SAMPLE: { "username": "test", "password": "test" }
+    ERROR CODES:
+        1: BAD USERNAME
+        2: BAD PASSWORD
+        3: USERNAM EXISTS
+*/
 router.post('/signup', (req, res) => {
     // CHECK USERNAME FORMAT
     let usernameRegex = /^[a-zA-Z0-9]+$/;
@@ -49,6 +57,12 @@ router.post('/signup', (req, res) => {
     });
 });
 
+/*
+    ACCOUNT SIGNIN: POST /api/account/signin
+    BODY SAMPLE: { "username": "test", "password": "test" }
+    ERROR CODES:
+        1: LOGIN FAILED
+*/
 router.post('/signin', (req, res) => {
 
     if(typeof req.body.password !== "string") {
@@ -92,7 +106,9 @@ router.post('/signin', (req, res) => {
     });
 });
 
-
+/*
+    ACCOUNT SIGNUP: GET /api/account/getInfo
+*/
 router.get('/getinfo', (req, res) => {
     if(typeof req.session.loginInfo === "undefined") {
         return res.status(401).json({
@@ -103,6 +119,9 @@ router.get('/getinfo', (req, res) => {
     res.json({ info: req.session.loginInfo });
 });
 
+/*
+    ACCOUNT SIGNUP: POST /api/account/getInfo
+*/
 router.post('/logout', (req, res) => {
     req.session.destroy(err => { if(err) throw err; });
     return res.json({ sucess: true });
