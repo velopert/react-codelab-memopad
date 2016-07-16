@@ -32,12 +32,17 @@ app.use(session({
     saveUninitialized: true
 }));
 
+
+
 /* setup routers & static directory */
 import api from './routes';
 app.use('/api', api);
 
 /* serve static files */
 app.use('/', express.static(path.join(__dirname, './../public')));
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './../public/index.html'));
+});
 
 /* handle error */
 app.use(function(err, req, res, next) {
