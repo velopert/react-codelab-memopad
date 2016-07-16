@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 
 class Authentication extends React.Component {
 
@@ -10,12 +10,38 @@ class Authentication extends React.Component {
             password: ""
         };
         this.handleChange = this.handleChange.bind(this);
+        this.handleLogin = this.handleLogin.bind(this);
     }
 
     handleChange(e) {
         let nextState = {};
         nextState[e.target.name] = e.target.value;
         this.setState(nextState);
+    }
+
+    handleLogin() {
+        this.props.onLogin(this.state.username, this.state.password).then(
+            () => {
+                if(this.props.status === "SUCCESS") {
+                    // create session data
+                    let loginData = {
+                        isLoggedIn: true,
+                        username: this.state.username
+                    };
+
+                    document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+
+                    Materialize.toast('Welcome, ' + this.state.username + '!', 2000);
+                    browserHistory.push('/');
+                } else {
+                    let $toastContent = $('<span style="color: #FFB4BA">Incorrect username or password</span>');
+                    Materialize.toast($toastContent, 2000);
+                    this.setState({
+                        password: ''
+                    });
+                }
+            }
+        );
     }
 
     render() {
@@ -47,7 +73,8 @@ class Authentication extends React.Component {
                 <div className="card-content">
                     <div className="row">
                         {inputBoxes}
-                        <a className="waves-effect waves-light btn">SUBMIT</a>
+                        <a className="waves-effect waves-light btn"
+                            onClick={this.handleLogin}>SUBMIT</a>
                     </div>
                 </div>
 
@@ -89,13 +116,15 @@ class Authentication extends React.Component {
 Authentication.propTypes = {
     mode: React.PropTypes.bool,
     onLogin: React.PropTypes.func,
-    onRegister: React.PropTypes.func
+    onRegister: React.PropTypes.func,
+    status: React.PropTypes.string
 };
 
 Authentication.defaultProps = {
     mode: true,
     onLogin: (id, pw) => { console.error("login function not defined"); },
-    onRegister: (id, pw) => { console.error("register function not defined"); }
+    onRegister: (id, pw) => { console.error("register function not defined"); },
+    status: 'INIT'
 };
 
 export default Authentication;
