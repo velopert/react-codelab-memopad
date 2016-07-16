@@ -1,13 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 class Header extends React.Component {
     render() {
 
         const loginButton = (
             <li>
-                <a>
+                <Link to="/login">
                     <i className="material-icons">vpn_key</i>
-                </a>
+                </Link>
             </li>
         );
 
@@ -47,7 +48,7 @@ Header.propTypes = {
 
 Header.defaultProps = {
     isLoggedIn: false,
-    onLogout: () => { console.log("logout function not defined");}
+    onLogout: () => { console.error("logout function not defined");}
 };
 
 export default Header;
