@@ -11,6 +11,8 @@ class Authentication extends React.Component {
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
+        this.handleRegister = this.handleRegister.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
     handleChange(e) {
@@ -44,6 +46,48 @@ class Authentication extends React.Component {
         );
     }
 
+    handleRegister() {
+        this.props.onRegister(this.state.username, this.state.password).then(
+            () => {
+                if(this.props.status === "SUCCESS") {
+                    Materialize.toast('Success! Please log in.', 2000);
+                    browserHistory.push('/login');
+                } else {
+                    /*
+                        ERROR CODES:
+                            1: BAD USERNAME
+                            2: BAD PASSWORD
+                            3: USERNAM EXISTS
+                    */
+                    let errorMessage = [
+                        'Invalid Username',
+                        'Password is too short',
+                        'Username already exists'
+                    ];
+
+                    let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[this.props.errorCode - 1] + '</span>');
+                    Materialize.toast($toastContent, 2000);
+
+                    this.setState({
+                        username: '',
+                        password: ''
+                    });
+                }
+            }
+        );
+    }
+
+    handleKeyPress(e) {
+        if(e.charCode==13) {
+            if(this.props.mode) {
+                this.handleLogin();
+            } else {
+                this.handleRegister();
+            }
+        }
+    }
+
+
     render() {
         const inputBoxes = (
             <div>
@@ -63,7 +107,8 @@ class Authentication extends React.Component {
                     type="password"
                     className="validate"
                     onChange={this.handleChange}
-                    value={this.state.password}/>
+                    value={this.state.password}
+                    onKeyPress={this.handleKeyPress}/>
                 </div>
             </div>
         );
@@ -94,7 +139,8 @@ class Authentication extends React.Component {
             <div className="card-content">
                 <div className="row">
                     {inputBoxes}
-                    <a className="waves-effect waves-light btn">CREATE</a>
+                    <a className="waves-effect waves-light btn"
+                        onClick={this.handleRegister}>CREATE</a>
                 </div>
             </div>
         );
@@ -117,14 +163,16 @@ Authentication.propTypes = {
     mode: React.PropTypes.bool,
     onLogin: React.PropTypes.func,
     onRegister: React.PropTypes.func,
-    status: React.PropTypes.string
+    status: React.PropTypes.string,
+    errorCode: React.PropTypes.number
 };
 
 Authentication.defaultProps = {
     mode: true,
     onLogin: (id, pw) => { console.error("login function not defined"); },
     onRegister: (id, pw) => { console.error("register function not defined"); },
-    status: 'INIT'
+    status: 'INIT',
+    errorCode: -1
 };
 
 export default Authentication;
