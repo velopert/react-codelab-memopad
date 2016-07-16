@@ -2,6 +2,27 @@ import React from 'react';
 import { Link } from 'react-router';
 
 class Header extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.handleLogout = this.handleLogout.bind(this);
+    }
+
+    handleLogout() {
+        this.props.onLogout().then(
+            () => {
+                Materialize.toast('Good Bye!', 2000);
+
+                // EMPTIES THE SESSION
+                let loginData = {
+                    isLoggedIn: false,
+                    username: ''
+                };
+
+                document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+            }
+        );
+    }
     render() {
 
         const loginButton = (
@@ -14,7 +35,7 @@ class Header extends React.Component {
 
         const logoutButton = (
             <li>
-                <a onClick={this.props.onLogout}>
+                <a onClick={this.handleLogout}>
                     <i className="material-icons">lock_open</i>
                 </a>
             </li>

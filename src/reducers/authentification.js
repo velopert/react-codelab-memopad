@@ -10,6 +10,7 @@ const initialState = {
         error: -1
     },
     status: {
+        valid: false,
         isLoggedIn: false,
         currentUser: '',
     }
@@ -43,6 +44,7 @@ export default function authentification(state, action) {
                     status: { $set: 'FAILURE' }
                 }
             });
+        /* REGISTER */
         case types.AUTH_REGISTER:
             return update(state, {
                 register: {
@@ -61,6 +63,35 @@ export default function authentification(state, action) {
                 register: {
                     status: { $set: 'FAILURE' },
                     error: { $set: action.error }
+                }
+            });
+        /* GET STATUS */
+        case types.AUTH_GET_STATUS:
+            return update(state, {
+                status: {
+                    isLoggedIn: { $set: true }
+                }
+            });
+        case types.AUTH_GET_STATUS_SUCCESS:
+            return update(state, {
+                status: {
+                    valid: { $set: true },
+                    currentUser: { $set: action.username }
+                }
+            });
+        case types.AUTH_GET_STATUS_FAILURE:
+            return update(state, {
+                status: {
+                    valid: { $set: false },
+                    isLoggedIn: { $set: false }
+                }
+            });
+        /* LOGOUT */
+        case types.AUTH_LOGOUT:
+            return update(state, {
+                status: {
+                    isLoggedIn: { $set: false },
+                    currentUser: { $set: '' }
                 }
             });
         default:
