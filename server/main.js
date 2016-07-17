@@ -19,8 +19,8 @@ db.once('open', () => { console.log('Connected to mongodb server'); });
 mongoose.connect('mongodb://localhost/codelab');
 
 const app = express();
-const port = 3000;
-const devPort = 4000;
+const port = 8080;
+const devPort = 8081;
 
 /* setup express middlewares */
 app.use(morgan('dev'));
