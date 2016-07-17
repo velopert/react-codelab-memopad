@@ -28,6 +28,13 @@ router.post('/', (req, res) => {
         });
     }
 
+    if(req.body.contents === "") {
+        return res.status(400).json({
+            error: "EMPTY CONTENTS",
+            code: 2
+        });   
+    }
+
     // CREATE NEW MEMO
     let memo = new Memo({
         writer: req.session.loginInfo.username,
