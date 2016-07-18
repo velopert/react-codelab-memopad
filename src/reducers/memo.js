@@ -55,9 +55,23 @@ export default function memo(state, action) {
                     }
                 })
             } else {
-                // loading older or newer memo
-                // to be implemented..
-                return state;
+                if(action.listType === 'new') {
+                    return update(state, {
+                        list: {
+                            status: { $set: 'SUCCESS' },
+                            data: { $unshift: action.data },
+                        }
+                    });
+                } else {
+                    return update(state, {
+                        list: {
+                            status: { $set: 'SUCCESS' },
+                            data: { $push: action.data },
+                            isLast: { $set: action.data.length < 6 }
+                        }
+                    });    
+                }
+                
             }
         case types.MEMO_LIST_FAILURE:
             return update(state, {

@@ -24,11 +24,15 @@ class Write extends React.Component {
         this.props.onPost(this.state.contents).then(
             () => {
                 if(this.props.status.status === "SUCCESS") {
-                    this.setState({
-                        contents: ""
-                    });
-                    Materialize.toast('Success!', 2000);
                     // TRIGGER LOAD NEW MEMO
+                    this.props.loadMemo().then(
+                            () => {
+                            this.setState({
+                                contents: ""
+                            });
+                            Materialize.toast('Success!', 2000);
+                        }
+                    );
                 } else {
 
                     /*
@@ -80,11 +84,13 @@ class Write extends React.Component {
 
 Write.propTypes = {
     onPost: React.PropTypes.func,
+    loadMemo: React.PropTypes.func,
     status: React.PropTypes.object
 };
 
 Write.defaultProps = {
     onPost: (contents) => { console.error('post function not defined'); },
+    loadMemo: () => { console.error('load function not defined'); },
     status: { }
 };
 
