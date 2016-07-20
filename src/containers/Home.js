@@ -1,7 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Write, MemoList } from 'components';
-import { memoPostRequest, memoListRequest } from 'actions/memo';
+import { 
+    memoPostRequest, 
+    memoListRequest, 
+    memoEditRequest,
+    memoRemoveRequest,
+    memoRemoveFromData
+} from 'actions/memo';
 
 class Home extends React.Component {
     
@@ -119,12 +125,20 @@ class Home extends React.Component {
                 status={this.props.postStatus}
             />
         );
-
+        
+        
         
         return (
             <div className="wrapper">
                 { this.props.isLoggedIn ? write : undefined }
-                <MemoList data={this.props.memoData} currentUser={this.props.currentUser}/>
+                <MemoList data={this.props.memoData} 
+                     currentUser={this.props.currentUser}
+                     onEdit={this.props.memoEditRequest}
+                     editStatus={this.props.editStatus}
+                     onRemove={this.props.memoRemoveRequest}
+                     onRemoveData={this.props.memoRemoveFromData}
+                     removeStatus={this.props.removeStatus}
+                 />
             </div>
         );
     }
@@ -137,7 +151,9 @@ const mapStateToProps = (state) => {
         currentUser: state.authentification.status.currentUser,
         memoData: state.memo.list.data,
         listStatus: state.memo.list.status,
-        isLast: state.memo.list.isLast
+        isLast: state.memo.list.isLast,
+        editStatus: state.memo.edit,
+        removeStatus: state.memo.remove
     };
 };
 
@@ -148,6 +164,15 @@ const mapDispatchToProps = (dispatch) => {
         }, 
         memoListRequest: (isInitial, listType, id, username) => {
             return dispatch(memoListRequest(isInitial, listType, id, username));
+        },
+        memoEditRequest: (id, index, contents) => {
+            return dispatch(memoEditRequest(id, index, contents));
+        },
+        memoRemoveRequest: (id, index) => {
+            return dispatch(memoRemoveRequest(id, index));
+        },
+        memoRemoveFromData: (index) => {
+            return dispatch(memoRemoveFromData(index));
         }
     };
 };

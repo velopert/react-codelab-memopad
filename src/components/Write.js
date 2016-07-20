@@ -43,9 +43,10 @@ class Write extends React.Component {
                     let $toastContent;
                     switch(this.props.status.error) {
                         case 1:
-                            // TRIGGER PAGE REFRESH
-                            // IT WILL NOTIFY THAT THE SESSION HAS EXPIRED
-                            location.reload(false);
+                            // IF NOT LOGGED IN, NOTIFY AND REFRESH AFTER
+                            $toastContent = $('<span style="color: #FFB4BA">You are not logged in</span>');
+                            Materialize.toast($toastContent, 2000);
+                            setTimeout(()=> {location.reload(false)}, 2000);
                             break;
                         case 2:
                             $toastContent = $('<span style="color: #FFB4BA">Please write something</span>');

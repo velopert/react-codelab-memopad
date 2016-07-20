@@ -4,7 +4,14 @@ import {
     MEMO_POST_FAILURE,
     MEMO_LIST,
     MEMO_LIST_SUCCESS,
-    MEMO_LIST_FAILURE
+    MEMO_LIST_FAILURE,
+    MEMO_EDIT,
+    MEMO_EDIT_SUCCESS,
+    MEMO_EDIT_FAILURE,
+    MEMO_REMOVE,
+    MEMO_REMOVE_SUCCESS,
+    MEMO_REMOVE_FAILURE,
+    MEMO_REMOVE_FROM_DATA
 } from './ActionTypes';
 import axios from 'axios';
 
@@ -94,4 +101,80 @@ export function memoListFailure() {
     return {
         type: MEMO_LIST_FAILURE
     };
+}
+
+/* MEMO EDIT */
+export function memoEditRequest(id, index, contents) {
+    return (dispatch) => {
+        
+        dispatch(memoEdit());
+        
+        return axios.put('/api/memo/' + id, { contents })
+        .then((response) => {
+            console.log(response.data.memo);
+            dispatch(memoEditSuccess(index, response.data.memo));
+        }).catch((error) => {
+            dispatch(memoEditFailure(error.response.data.code));
+        });
+    };
+}
+
+export function memoEdit() {
+    return {
+        type: MEMO_EDIT
+    };
+}
+
+export function memoEditSuccess(index, memo) {
+    return {
+        type: MEMO_EDIT_SUCCESS,
+        index, 
+        memo
+    };
+}
+
+export function memoEditFailure(error) {
+    return {
+        type: MEMO_EDIT_FAILURE,
+        error
+    };
+}
+
+/* MEMO REMOVE */
+export function memoRemoveRequest(id, index) {
+    return (dispatch) => {
+        dispatch(memoRemove());
+        
+        return axios.delete('/api/memo/' + id)
+        .then((response) => {
+            dispatch(memoRemoveSuccess(index));
+        }).catch((error) => {
+            dispatch(memoRemoveFailure(error.response.data.code));
+        });
+    };
+}
+
+export function memoRemove() {
+    return {
+        type: MEMO_REMOVE
+    };
+}
+
+export function memoRemoveSuccess() {
+    return {
+        type: MEMO_REMOVE_SUCCESS,
+    };
+}
+
+export function memoRemoveFailure(error) {
+    return {
+        type: MEMO_REMOVE_FAILURE
+    };
+}
+
+export function memoRemoveFromData(index) {
+    return {
+        type: MEMO_REMOVE_FROM_DATA,
+        index
+    }
 }

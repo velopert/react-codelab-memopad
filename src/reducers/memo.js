@@ -7,9 +7,17 @@ const initialState = {
         error: -1
     },
     list: {
-        status: '',
+        status: 'INIT',
         data: [],
         isLast: false
+    },
+    edit: {
+        status: 'INIT',
+        error: -1
+    },
+    remove: {
+        status: 'INIT',
+        error: -1
     }
 };
 
@@ -79,6 +87,58 @@ export default function memo(state, action) {
                     status: { $set: 'FAILURE' }
                 }
             })
+        case types.MEMO_EDIT: 
+            return update(state, {
+                edit: {
+                    status: { $set: 'WAITING' },
+                    error: { $set: -1 },
+                    memo: { $set: undefined }
+                }
+            });
+        case types.MEMO_EDIT_SUCCESS:
+            return update(state, {
+                edit: {
+                    status: { $set: 'SUCCESS' },
+                },
+                list: {
+                    data: {
+                        [action.index]: { $set: action.memo }
+                    }
+                }
+            });
+        case types.MEMO_EDIT_FAILURE:
+            return update(state, {
+                edit: {
+                    status: { $set: 'FAILURE' },
+                    error: { $set: action.error }
+                }
+            });
+        case types.MEMO_REMOVE:
+            return update(state, {
+                remove: {
+                    status: { $set: 'WAITING' },
+                    error: { $set: -1 }
+                }
+            });
+        case types.MEMO_REMOVE_SUCCESS: 
+            return update(state, {
+                remove: {
+                    status: { $set: 'SUCCESS' }
+                }
+            });
+        case types.MEMO_REMOVE_FAILURE:
+            return update(state, {
+                remove: {
+                    status: { $set: 'FAILURE' },
+                    error: { $set: action.error }
+                }
+            });
+        case types.MEMO_REMOVE_FROM_DATA:
+            return update(state, {
+                list: {
+                    data: { $splice: [[action.index, 1]] }
+                }
+            });
         default:
             return state;
     }
