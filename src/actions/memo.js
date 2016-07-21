@@ -147,7 +147,7 @@ export function memoRemoveRequest(id, index) {
         
         return axios.delete('/api/memo/' + id)
         .then((response) => {
-            dispatch(memoRemoveSuccess(index));
+            dispatch(memoRemoveSuccess());
         }).catch((error) => {
             dispatch(memoRemoveFailure(error.response.data.code));
         });
