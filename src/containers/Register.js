@@ -2,15 +2,49 @@ import React from 'react';
 import { Authentication } from 'components';
 import { connect } from 'react-redux';
 import { registerRequest } from 'actions/authentification';
+import { browserHistory } from 'react-router';
 
 class Register extends React.Component {
+    
+    
+    constructor(props) {
+        super(props);
+        this.handleRegister = this.handleRegister.bind(this);    
+    }
+    
+    handleRegister(id, pw) {
+        return this.props.registerRequest(id, pw).then(
+            () => {
+                if(this.props.status === "SUCCESS") {
+                    Materialize.toast('Success! Please log in.', 2000);
+                    browserHistory.push('/login');
+                    return true;
+                } else {
+                    /*
+                        ERROR CODES:
+                            1: BAD USERNAME
+                            2: BAD PASSWORD
+                            3: USERNAM EXISTS
+                    */
+                    let errorMessage = [
+                        'Invalid Username',
+                        'Password is too short',
+                        'Username already exists'
+                    ];
+
+                    let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[this.props.error - 1] + '</span>');
+                    Materialize.toast($toastContent, 2000);
+                    return false;
+                }
+            }
+        );
+    }
+    
     render() {
         return (
             <div>
                 <Authentication mode={false}
-                    onRegister={this.props.registerRequest}
-                    status={this.props.status}
-                    errorCode={this.props.errorCode}/>
+                    onRegister={this.handleRegister}/>
             </div>
         );
     }
@@ -19,7 +53,7 @@ class Register extends React.Component {
 const mapStateToProps = (state) => {
     return {
         status: state.authentification.register.status,
-        errorCode: state.authentification.register.error
+        error: state.authentification.register.error
     };
 };
 

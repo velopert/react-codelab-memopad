@@ -21,44 +21,13 @@ class Write extends React.Component {
     }
 
     handlePost() {
-        this.props.onPost(this.state.contents).then(
+        let contents = this.state.contents;
+        
+        this.props.onPost(contents).then(
             () => {
-                if(this.props.status.status === "SUCCESS") {
-                    // TRIGGER LOAD NEW MEMO
-                    this.props.loadMemo().then(
-                            () => {
-                            this.setState({
-                                contents: ""
-                            });
-                            Materialize.toast('Success!', 2000);
-                        }
-                    );
-                } else {
-
-                    /*
-                        ERROR CODES
-                            1: NOT LOGGED IN
-                            2: EMPTY CONTENTS
-                    */
-                    let $toastContent;
-                    switch(this.props.status.error) {
-                        case 1:
-                            // IF NOT LOGGED IN, NOTIFY AND REFRESH AFTER
-                            $toastContent = $('<span style="color: #FFB4BA">You are not logged in</span>');
-                            Materialize.toast($toastContent, 2000);
-                            setTimeout(()=> {location.reload(false)}, 2000);
-                            break;
-                        case 2:
-                            $toastContent = $('<span style="color: #FFB4BA">Please write something</span>');
-                            Materialize.toast($toastContent, 2000);
-                            break;
-                        default:
-                            $toastContent = $('<span style="color: #FFB4BA">Something Broke</span>');
-                            Materialize.toast($toastContent, 2000);
-                            break;
-                    }
-
-                }
+                this.setState({
+                    contents: ""
+                });
             }
         );
     }
@@ -84,15 +53,11 @@ class Write extends React.Component {
 }
 
 Write.propTypes = {
-    onPost: React.PropTypes.func,
-    loadMemo: React.PropTypes.func,
-    status: React.PropTypes.object
-};
+    onPost: React.PropTypes.func
+}
 
 Write.defaultProps = {
     onPost: (contents) => { console.error('post function not defined'); },
-    loadMemo: () => { console.error('load function not defined'); },
-    status: { }
 };
 
 export default Write;

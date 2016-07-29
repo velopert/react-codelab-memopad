@@ -1,5 +1,7 @@
 import React from 'react';
 import TimeAgo from 'react-timeago';
+import shallowequal from 'shallowequal';
+import { Link } from 'react-router';
 
 class Memo extends React.Component {
 
@@ -7,55 +9,41 @@ class Memo extends React.Component {
         super(props);
         this.state = {
             editMode: false,
-            value: props.data.contents,
-            isRemoving: false
+            value: props.data.contents
         };
         this.toggleEdit = this.toggleEdit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleRemove = this.handleRemove.bind(this);
+        this.handleStar = this.handleStar.bind(this);
     }
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        let current = {
+            props: this.props,
+            state: this.state
+        };
+        
+        let next = {
+            props: nextProps,
+            state: nextState
+        }
+        
+        let update = JSON.stringify(current) !== JSON.stringify(next);
+        return update;
+    }
+    
     
     toggleEdit() {
         if(this.state.editMode) {
-            this.props.onEdit(this.props.data._id, this.props.index, this.state.value).then(
-                () => {
-                    if(this.props.editStatus.status==="SUCCESS") {
-                        Materialize.toast('Success!', 2000);
-                    } else {
-                        /*
-                            ERROR CODES
-                                1: INVALID ID,
-                                2: EMPTY CONTENTS
-                                3: NOT LOGGED IN
-                                4: NO RESOURCE
-                                5: PERMISSION FAILURE
-                        */
-                        let errorMessage = [
-                            'Something broke',
-                            'Please write soemthing',
-                            'You are not logged in',
-                            'That memo does not exist anymore',
-                            'You do not have permission'
-                        ];
-                        
-                        let error = this.props.editStatus.error;
-                        
-                        // NOTIFY ERROR
-                        let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[error - 1] + '</span>');
-                        Materialize.toast($toastContent, 2000);
-                    
-                        // IF NOT LOGGED IN, REFRESH THE PAGE AFTER 2 SECONDS
-                        if(error === 3) {
-                            setTimeout(()=> {location.reload(false)}, 2000);
-                        }
-                        
-                    }
-                    
-                    this.setState({
-                        editMode: !this.state.editMode
-                    });
-                }
-            );
+            let id = this.props.data._id;
+            let index = this.props.index;
+            let contents = this.state.value;
+            
+            this.props.onEdit(id, index, contents).then(() => {
+                this.setState({
+                    editMode: !this.state.editMode
+                });
+            })
         } else {
             this.setState({
                 editMode: !this.state.editMode
@@ -63,45 +51,18 @@ class Memo extends React.Component {
         }
     }
     
+    
     handleRemove() {
-        this.props.onRemove(this.props.data._id, this.props.index).then(() => {
-            if(this.props.removeStatus.status==="SUCCESS") {
-                
-                this.setState({
-                    isRemoving: true
-                });
-                
-                // ACTUALLY REMOVE FROM DATA AFTER 1 SEC ( ANIMATION FINISH )
-                setTimeout(() => {this.props.onRemoveData(this.props.index);}, 1000);
-                
-            } else {
-                // ERROR
-                /*
-                    DELETE MEMO: DELETE /api/memo/:id
-                    ERROR CODES
-                        1: INVALID ID
-                        2: NOT LOGGED IN
-                        3: NO RESOURCE
-                        4: PERMISSION FAILURE
-                */
-                let errorMessage = [
-                    'Something broke',
-                    'You are not logged in',
-                    'That memo does not exist',
-                    'You do not have permission'
-                ];
-                
-                 // NOTIFY ERROR
-                let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[error - 1] + '</span>');
-                Materialize.toast($toastContent, 2000);
-
-
-                // IF NOT LOGGED IN, REFRESH THE PAGE
-                if(this.props.removeStatus.error === 2) {
-                    setTimeout(()=> {location.reload(false)}, 2000);
-                }
-            }
-        });
+        let id = this.props.data._id;
+        let index = this.props.index;
+        this.props.onRemove(id, index);
+        console.log(index);
+    }
+    
+    handleStar() {
+        let id = this.props.data._id;
+        let index = this.props.index;
+        this.props.onStar(id, index); 
     }
     
     handleChange(e) {
@@ -129,12 +90,17 @@ class Memo extends React.Component {
         let editedInfo = (
             <span style={{color: '#AAB5BC'}}> · Edited <TimeAgo date={this.props.data.date.edited} live={true}/></span>
         );
+        
+        // IF IT IS STARRED ( CHECKS WHETHER THE NICKNAME EXISTS IN THE ARRAY )
+        // RETURN STYLE THAT HAS A YELLOW COLOR
+        let starStyle = (this.props.data.starred.indexOf(this.props.currentUser) > -1) ? { color: '#ff9980' } : {} ;
+        
 
         
         const memoView = (
             <div className="card">
                 <div className="info">
-                    <a className="username">{this.props.data.writer}</a> wrote a log · <TimeAgo date={this.props.data.date.created}/> 
+                    <Link to={`/wall/${this.props.data.writer}`} className="username">{this.props.data.writer}</Link> wrote a log · <TimeAgo date={this.props.data.date.created}/> 
                     { this.props.data.is_edited ? editedInfo : undefined }
                     { this.props.ownership ? dropDownMenu : undefined }
                 </div>
@@ -142,7 +108,9 @@ class Memo extends React.Component {
                     {this.props.data.contents}
                 </div>
                 <div className="footer">
-                    <i className="material-icons log-footer-icon star icon-button">star</i>
+                    <i className="material-icons log-footer-icon star icon-button" 
+                        style={starStyle}
+                        onClick={this.handleStar}>star</i>
                     <span className="star-count">{this.props.data.starred.length}</span>
                 </div>
             </div>
@@ -164,9 +132,8 @@ class Memo extends React.Component {
             </div>
         );
         
-        const fadeOut = (this.state.isRemoving ? 'memo-fade-out' : undefined);
         return (
-            <div className={`container memo memo-fade-in ${fadeOut}`}>
+            <div className="container memo memo-fade-in">
                 { this.state.editMode ? editView : memoView }
             </div>
         );
@@ -194,11 +161,10 @@ Memo.propTypes = {
     data: React.PropTypes.object,
     ownership: React.PropTypes.bool,
     onEdit: React.PropTypes.func,
-    editStatus: React.PropTypes.object,
     index: React.PropTypes.number,
     onRemove: React.PropTypes.func,
-    onRemoveData: React.PropTypes.func,
-    removeStatus: React.PropTypes.object
+    onStar: React.PropTypes.func,
+    currentUser: React.PropTypes.string
 };
 
 Memo.defaultProps = {
@@ -217,15 +183,14 @@ Memo.defaultProps = {
     onEdit: (id, index, contents) => {
         console.error('onEdit function not defined');
     },
-    editStatus: {},
     index: -1,
     onRemove: (id, index) => { 
         console.error('remove function not defined'); 
     },
-    onRemoveData: (index) => {
-        console.error('remove data function not defined');
+    onStar: (id, index) => {
+        console.error('star function not defined');
     },
-    removeStatus: {}
+    currentUser: ''
 }
 
 export default Memo;

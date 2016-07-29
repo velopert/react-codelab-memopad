@@ -1,7 +1,13 @@
 import React from 'react';
 import { Memo } from 'components';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 class MemoList extends React.Component {
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        let update = JSON.stringify(this.props) !== JSON.stringify(nextProps);
+        return update;
+    }
     
     render() {
         const mapToComponents = data => {
@@ -12,17 +18,21 @@ class MemoList extends React.Component {
                             key={memo._id}
                             index={i}
                             onEdit={this.props.onEdit}
-                            editStatus={this.props.editStatus}
                             onRemove={this.props.onRemove}
-                            onRemoveData={this.props.onRemoveData}
-                            removeStatus={this.props.removeStatus}
+                            onStar={this.props.onStar}
+                            currentUser={this.props.currentUser}
                 />);
             });
         };
         
         return (
             <div>
-                {mapToComponents(this.props.data)}
+                <ReactCSSTransitionGroup transitionName="memo" 
+                                transitionEnterTimeout={2000} 
+                                transitionLeaveTimeout={1000}>
+                    {mapToComponents(this.props.data)}
+                </ReactCSSTransitionGroup>
+                
             </div>
         );
     }
@@ -32,10 +42,8 @@ MemoList.propTypes = {
     data: React.PropTypes.array,
     currentUser: React.PropTypes.string,
     onEdit: React.PropTypes.func,
-    editStatus: React.PropTypes.object,
     onRemove: React.PropTypes.func,
-    onRemoveData: React.PropTypes.func,
-    removeStatus: React.PropTypes.object
+    onStar: React.PropTypes.func,
 };
 
 MemoList.defaultProps = {
@@ -45,14 +53,12 @@ MemoList.defaultProps = {
         console.error('edit function not defined'); 
         
     },
-    editStatus: {},
     onRemove: (id, index) => { 
         console.error('remove function not defined'); 
     },
-    onRemoveData: (index) => {
-        console.error('remove data function not defined');
+    onStar: (id, index) => {
+        console.error('star function not defined');
     },
-    removeStatus: {}
 };
 
 export default MemoList;

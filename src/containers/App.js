@@ -2,10 +2,16 @@ import React from 'react';
 import { Header } from 'components';
 import { connect } from 'react-redux';
 import { getStatusRequest, logoutRequest } from 'actions/authentification';
-
+import { searchRequest } from 'actions/search';
 
 class App extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.handleLogout = this.handleLogout.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
+    }
+    
     componentDidMount() {
         // get cookie by name
         function getCookie(name) {
@@ -49,7 +55,27 @@ class App extends React.Component {
             }
         );
     }
+    
+    handleLogout() {
+        this.props.logoutRequest().then(
+            () => {
+                Materialize.toast('Good Bye!', 2000);
 
+                // EMPTIES THE SESSION
+                let loginData = {
+                    isLoggedIn: false,
+                    username: ''
+                };
+
+                document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+            }
+        );
+    }
+    
+    handleSearch(keyword) {
+        this.props.searchRequest(keyword);
+    }
+    
     render() {
         /* Check whether current route is login or register using regex */
         let re = /(login|register)/;
@@ -58,7 +84,9 @@ class App extends React.Component {
         return (
             <div>
                 {isAuth ? undefined : <Header isLoggedIn={this.props.status.isLoggedIn}
-                                                onLogout={this.props.logoutRequest}/>}
+                                                onLogout={this.handleLogout}
+                                                onSearch={this.handleSearch}
+                                                usernames={this.props.usernames}/>}
                 { this.props.children }
             </div>
         );
@@ -67,7 +95,8 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        status: state.authentification.status
+        status: state.authentification.status,
+        usernames: state.search.usernames
     };
 };
 
@@ -78,6 +107,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         logoutRequest: () => {
             return dispatch(logoutRequest());
+        },
+        searchRequest: (keyword) => {
+            return dispatch(searchRequest(keyword));
         }
     };
 };

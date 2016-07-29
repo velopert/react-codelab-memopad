@@ -22,22 +22,12 @@ class Authentication extends React.Component {
     }
 
     handleLogin() {
-        this.props.onLogin(this.state.username, this.state.password).then(
-            () => {
-                if(this.props.status === "SUCCESS") {
-                    // create session data
-                    let loginData = {
-                        isLoggedIn: true,
-                        username: this.state.username
-                    };
-
-                    document.cookie = 'key=' + btoa(JSON.stringify(loginData));
-
-                    Materialize.toast('Welcome, ' + this.state.username + '!', 2000);
-                    browserHistory.push('/');
-                } else {
-                    let $toastContent = $('<span style="color: #FFB4BA">Incorrect username or password</span>');
-                    Materialize.toast($toastContent, 2000);
+        let id = this.state.username;
+        let pw = this.state.password;
+        
+        this.props.onLogin(id, pw).then(
+            (success) => {
+                if(!success) {
                     this.setState({
                         password: ''
                     });
@@ -47,27 +37,12 @@ class Authentication extends React.Component {
     }
 
     handleRegister() {
-        this.props.onRegister(this.state.username, this.state.password).then(
-            () => {
-                if(this.props.status === "SUCCESS") {
-                    Materialize.toast('Success! Please log in.', 2000);
-                    browserHistory.push('/login');
-                } else {
-                    /*
-                        ERROR CODES:
-                            1: BAD USERNAME
-                            2: BAD PASSWORD
-                            3: USERNAM EXISTS
-                    */
-                    let errorMessage = [
-                        'Invalid Username',
-                        'Password is too short',
-                        'Username already exists'
-                    ];
-
-                    let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[this.props.errorCode - 1] + '</span>');
-                    Materialize.toast($toastContent, 2000);
-
+        let id = this.state.username;
+        let pw = this.state.password;
+        
+        this.props.onRegister(id, pw).then(
+            (result) => {
+                if(!result) {
                     this.setState({
                         username: '',
                         password: ''
@@ -162,17 +137,13 @@ class Authentication extends React.Component {
 Authentication.propTypes = {
     mode: React.PropTypes.bool,
     onLogin: React.PropTypes.func,
-    onRegister: React.PropTypes.func,
-    status: React.PropTypes.string,
-    errorCode: React.PropTypes.number
+    onRegister: React.PropTypes.func
 };
 
 Authentication.defaultProps = {
     mode: true,
     onLogin: (id, pw) => { console.error("login function not defined"); },
-    onRegister: (id, pw) => { console.error("register function not defined"); },
-    status: 'INIT',
-    errorCode: -1
+    onRegister: (id, pw) => { console.error("register function not defined"); }
 };
 
 export default Authentication;

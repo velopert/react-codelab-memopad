@@ -1,5 +1,6 @@
 body {
     background-color: #ECEFF1;
+    overflow-x: hidden;
 }
 
 .wrapper {
@@ -105,6 +106,7 @@ a {
 
 .memo .card-content {
     word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .memo .option-button {
@@ -140,7 +142,7 @@ a {
 }
 
 /* ANIMATION */
-@-webkit-keyframes memo-fade-in {
+@-webkit-keyframes memo-enter {
     0% {
       opacity: 0;
     }
@@ -149,7 +151,7 @@ a {
     }
 }
 
-@keyframes memo-fade-in {
+@keyframes memo-enter {
     0% {
       opacity: 0;
     }
@@ -158,15 +160,15 @@ a {
     }
 }
 
-.memo-fade-in {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-name: memo-fade-in;
-    animation-name: memo-fade-in;
+.memo-enter {
+    -webkit-animation-duration: 2s;
+    animation-duration: 2s;
+    -webkit-animation-name: memo-enter;
+    animation-name: memo-enter;
 }
 
 /* ANIMATION */
-@-webkit-keyframes memo-fade-out {
+@-webkit-keyframes memo-leave {
     0% {
       opacity: 1;
       max-height: 1080px;
@@ -180,7 +182,7 @@ a {
     }
 }
 
-@keyframes memo-fade-out {
+@keyframes memo-leave {
     0% {
       opacity: 1;
       max-height: 1080px;
@@ -194,13 +196,13 @@ a {
     }
 }
 
-.memo-fade-out {
+.memo-leave {
     max-height: 0px;
     opacity: 0;
     -webkit-animation-duration: 1s;
     animation-duration: 1s;
-    -webkit-animation-name: memo-fade-out;
-    animation-name: memo-fade-out;
+    -webkit-animation-name: memo-leave;
+    animation-name: memo-leave;
 }
 
 .star {
@@ -216,4 +218,130 @@ a {
     font-size: 13px;
     font-weight: bold;
     color: #777;
+}
+
+/* SEARCH */
+.search-screen {
+    position: fixed;
+    overflow-y: none;
+    left: 0px;
+    top: 0px;
+    height:100%;
+    width:100%;
+    background-color: rgba(0, 0, 0, 0.70);
+    z-index: 99;
+}
+
+.search-screen input {
+    text-align: center;
+    font-size: 50px;
+    line-height: 80px;
+    margin-top: 15vw;
+    height: 80px;
+    font-weight: 200;
+}
+
+.search-screen .btn {
+    margin-top: 14px;
+    margin-right: 20px;
+}
+
+ul.search-results {
+    text-align: center;
+    font-size: 30px;
+    margin-top: 0px;
+}
+
+.search-results a {
+    padding: 10px;
+    display: block;
+    color: white;
+}
+
+.search-results a + a {
+    border-top: 1px solid #5F5F5F;
+}
+
+.search-results a:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+.empty-page {
+    font-size: 30px;
+    text-align: center;
+    color: #4D4D4D;
+}
+
+.wall-info {
+    font-size: 30px;
+    text-align: center;
+}
+
+@-webkit-keyframes search-enter {
+    0% {
+      opacity: 0;
+      height: 0%;
+    }
+    100% {
+      opacity: 1;
+      height: 100%;
+    }
+}
+
+@keyframes search-enter {
+    0% {
+      opacity: 0;
+      height: 0%;
+    }
+    100% {
+      opacity: 1;
+      height: 100%;
+    }
+}
+
+.search-enter {
+    -webkit-animation-duration: 0.3s;
+    animation-duration: 0.3s;
+    -webkit-animation-name: search-enter;
+    animation-name: search-enter;
+}
+
+@-webkit-keyframes search-leave {
+    0% {
+      opacity: 1;
+      height: 100%;
+    }
+    100% {
+      opacity: 0;
+      height: 0%;
+    }
+}
+
+@keyframes search-leave {
+    0% {
+      opacity: 1;
+      height: 100%;
+    }
+    100% {
+      opacity: 0;
+      height: 0%;
+    }
+}
+
+.search-leave {
+    -webkit-animation-duration: 0.3s;
+    animation-duration: 0.3s;
+    -webkit-animation-name: search-leave;
+    animation-name: search-leave;
+}
+
+.empty-page {
+    font-size: 30px;
+    text-align: center;
+    color: #4D4D4D;
+}
+
+.wall-info {
+    font-size: 30px;
+    text-align: center;
 }

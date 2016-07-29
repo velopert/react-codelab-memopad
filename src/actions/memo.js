@@ -11,7 +11,10 @@ import {
     MEMO_REMOVE,
     MEMO_REMOVE_SUCCESS,
     MEMO_REMOVE_FAILURE,
-    MEMO_REMOVE_FROM_DATA
+    MEMO_REMOVE_FROM_DATA,
+    MEMO_STAR,
+    MEMO_STAR_SUCCESS,
+    MEMO_STAR_FAILURE
 } from './ActionTypes';
 import axios from 'axios';
 
@@ -70,7 +73,8 @@ export function memoListRequest(isInitial, listType, id, username) {
             url = isInitial ? url : url + '/' + listType + '/' + id;
         } else {
             // load memos of specific user
-            /* to be implemented */
+             url = url + '/' + username;
+             url = isInitial ? url : url + '/' + listType + '/' + id;
         }
           
         return axios.get(url)
@@ -147,7 +151,7 @@ export function memoRemoveRequest(id, index) {
         
         return axios.delete('/api/memo/' + id)
         .then((response) => {
-            dispatch(memoRemoveSuccess());
+            dispatch(memoRemoveSuccess(index));
         }).catch((error) => {
             dispatch(memoRemoveFailure(error.response.data.code));
         });
@@ -160,9 +164,10 @@ export function memoRemove() {
     };
 }
 
-export function memoRemoveSuccess() {
+export function memoRemoveSuccess(index) {
     return {
         type: MEMO_REMOVE_SUCCESS,
+        index
     };
 }
 
@@ -172,9 +177,36 @@ export function memoRemoveFailure(error) {
     };
 }
 
-export function memoRemoveFromData(index) {
+/* MEMO TOGGLE STAR */
+export function memoStarRequest(id, index) {
+    return (dispatch) => {
+        return axios.post('/api/memo/star/' + id)
+        .then((response) => {
+            dispatch(memoStarSuccess(index, response.data.memo));
+        }).catch((error) => {
+            dispatch(memoStarFailure(error.response.data.code));
+        });
+    };
+}
+
+
+export function memoStar() {
     return {
-        type: MEMO_REMOVE_FROM_DATA,
-        index
-    }
+        type: MEMO_STAR
+    };
+}
+
+export function memoStarSuccess(index, memo) {
+    return {
+        type: MEMO_STAR_SUCCESS,
+        index,
+        memo
+    };
+}
+
+export function memoStarFailure(error) {
+    return{
+        type: MEMO_STAR_FAILURE,
+        error
+    };
 }
