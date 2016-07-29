@@ -1,6 +1,5 @@
 import React from 'react';
 import TimeAgo from 'react-timeago';
-import shallowequal from 'shallowequal';
 import { Link } from 'react-router';
 
 class Memo extends React.Component {
